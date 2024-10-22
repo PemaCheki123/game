@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:matchinggcard/splash.dart';
+import 'avatar_selection.dart';
 import 'level_screen.dart';
+import 'main_page.dart';
+import 'splash.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,7 +11,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,22 +30,23 @@ class MyHomePage extends StatelessWidget {
   final String title;
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
       ),
       body: Center(
-        child: ElevatedButton(onPressed: (){
-          //Navigate to the LevelScreen
-          Navigator.push(
+        child: ElevatedButton(
+          onPressed: () {
+            // Navigate to the AvatarSelectionScreen
+            Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => LevelScreen()),
-          );
-        }, child: const Text('Go to Levels'),
+              MaterialPageRoute(builder: (context) => AvatarSelectionScreen()),
+            );
+          },
+          child: const Text('Go to Levels'),
         ),
       ),
     );
   }
 }
-
