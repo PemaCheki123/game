@@ -173,6 +173,7 @@ class _MainPageState extends State<MainPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Color(0xFFB20808),
           title: Text("Game Over"),
           content: Text("Time's up! Better luck next time."),
           actions: <Widget>[
@@ -255,6 +256,7 @@ class _MainPageState extends State<MainPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Color(0xFFBAD6EB),
           title: Text("Pause Menu"),
           content: Text("Game is paused. What would you like to do?"),
           actions: <Widget>[
@@ -289,13 +291,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the screen width to adjust card size dynamically
     double screenWidth = MediaQuery.of(context).size.width;
-
-    // Set crossAxisCount and aspectRatio based on screen width and card count
-    int crossAxisCount;
-    double aspectRatio;
-
 
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -305,22 +301,23 @@ class _MainPageState extends State<MainPage> {
             // Background image (placed behind everything else)
             Positioned.fill(
               child: Image.asset(
-                'assets/level_background1.jpg', // Replace with your background image path
-                fit: BoxFit.cover, // Make sure the image covers the screen
+                'assets/level_background1.jpg',
+                fit: BoxFit.cover,
               ),
             ),
-            // Your original UI elements go here
             Column(
               children: [
+                // Level Title
                 Padding(
                   padding: const EdgeInsets.only(top: 40.0, bottom: 8.0),
                   child: Center(
                     child: Text(
-                      'Level: ${widget.level}',
+                      'Level : ${widget.level}',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
+                        fontFamily: 'GhibliFont',
                         shadows: [
                           Shadow(
                             blurRadius: 10.0,
@@ -332,31 +329,50 @@ class _MainPageState extends State<MainPage> {
                     ),
                   ),
                 ),
+                // Time and Pause Section
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Time: $_start',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                      // Time icon and text
+                      Row(
+                        children: [
+                          Image.asset(
+                            'assets/time_icon.png', // Path to your image asset
+                            height: 36, // Adjusted size for time icon
+                          ),
+                          SizedBox(width: 6), // Small space between the image and time text
+                          Text(
+                            '$_start', // Time value or countdown
+                            style: TextStyle(
+                              fontSize: 22, // Font size
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
-                      IconButton(
-                        icon: Icon(Icons.pause, color: Colors.white),
-                        onPressed: _showPauseDialog, // Show pause dialog
+                      // Pause button aligned to the right edge
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 2), // White border around pause button
+                          borderRadius: BorderRadius.circular(8), // Rounded corners
+                        ),
+                        child: IconButton(
+                          icon: Icon(Icons.pause, color: Colors.white),
+                          onPressed: _showPauseDialog,
+                        ),
                       ),
                     ],
                   ),
                 ),
+                // Game Grid
                 Expanded(
-                  child: Center( // Center the grid to align visually
+                  child: Center(
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                      constraints: BoxConstraints(maxWidth: 600), // Limit max width for consistent look
+                      constraints: BoxConstraints(maxWidth: 600),
                       child: GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
@@ -371,33 +387,23 @@ class _MainPageState extends State<MainPage> {
                             onTap: () {
                               _onCardTap(card);
                             },
-                            child: Card(
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: AnimatedSwitcher(
-                                duration: Duration(milliseconds: 300),
-                                child: card.isFlipped || card.isMatched
-                                    ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.asset(
+                            child: Container(
+                              height: 120, // Set a fixed height
+                              width: 120, // Set a fixed width
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12), // Rounded corners for each card
+                                child: AnimatedSwitcher(
+                                  duration: Duration(milliseconds: 300),
+                                  child: card.isFlipped || card.isMatched
+                                      ? Image.asset(
                                     card.image,
                                     key: ValueKey(card.image),
-                                    fit: BoxFit.cover, // Ensures image fills the card completely
-                                  ),
-                                )
-                                    : Container(
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFF4F5464),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  key: ValueKey('hidden-$index'),
-                                  child: Center(
-                                    child: Text(
-                                      '?',
-                                      style: TextStyle(fontSize: 24, color: Color(0xFFFEFCF6)),
-                                    ),
+                                    fit: BoxFit.cover, // Ensures the image covers the card entirely
+                                  )
+                                      : Image.asset(
+                                    'assets/card_cover.jpg', // Cover image path
+                                    key: ValueKey('cover-$index'),
+                                    fit: BoxFit.cover, // Ensures the cover image also covers the entire card
                                   ),
                                 ),
                               ),
@@ -415,6 +421,9 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
+
+
+
 
 
 

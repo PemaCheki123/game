@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'avatar_selection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'level_screen.dart';
-
+import 'sound_manager.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -68,6 +68,10 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+
+    // Start playing music when the splash screen appears
+    SoundManager().init();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(

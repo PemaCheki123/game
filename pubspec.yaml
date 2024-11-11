@@ -75,17 +75,21 @@ flutter:
       - assets/avater4.gif
       - assets/avater5.gif
       - assets/avater6.gif
-      - assets/card1.jpg
-      - assets/card2.jpg
-      - assets/card3.jpg
-      - assets/card4.jpg
-      - assets/card5.jpg
-      - assets/card6.jpg
-      - assets/card7.jpg
+      - assets/card1.png
+      - assets/card2.png
+      - assets/card3.png
+      - assets/card4.png
+      - assets/card5.png
+      - assets/card6.png
+      - assets/card7.png
       - assets/level_background.jpg
       - assets/level_background1.jpg
       - assets/level_background2.jpg
       - assets/level_background3.jpg
+      - assets/card_cover.jpg
+      - assets/time_icon.png
+      - assets/level_background.png
+      - assets/card_sound.mp3
 
 
 

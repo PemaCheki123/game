@@ -130,17 +130,24 @@ class DatabaseHelper {
     return false;
   }
 
-  // Initialize level 1 as unlocked if the table is empty
+// Initialize level 1 as unlocked if the table is empty
   Future<void> initializeLevelStatus() async {
     Database db = await database;
+
+    // Check if the level status table is empty
     final count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $tableLevelStatus'));
+
     if (count == 0) {
-      await db.insert(tableLevelStatus, {'level': 1, 'isUnlocked': 1}); // Unlock level 1 by default
+      // Unlock level 1 by default
+      await db.insert(tableLevelStatus, {'level': 1, 'isUnlocked': 1});
+
+      // Set other levels (2 to 6) as locked by default
       for (int i = 2; i <= 6; i++) {
         await db.insert(tableLevelStatus, {'level': i, 'isUnlocked': 0});
       }
     }
   }
+
 
   //updating the star rating
   Future<int> updateStars(int level, int stars) async {

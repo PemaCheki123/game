@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:matchinggcard/sound_manager.dart';
 import 'package:share_plus/share_plus.dart';
 import 'avatar_selection.dart';
 import 'database_helper.dart';
@@ -21,8 +22,7 @@ class LevelScreen extends StatefulWidget {
 }
 
 class _LevelScreenState extends State<LevelScreen> {
-  final AudioPlayer audioPlayer = AudioPlayer();
-  bool isSoundEnabled = true;
+  bool isSoundEnabled = SoundManager().isSoundEnabled;
   Map<int, bool> levelCompletionStatus = {};
   Map<int, int> levelStars = {};
 
@@ -43,10 +43,10 @@ class _LevelScreenState extends State<LevelScreen> {
       'level': 1,
       'numPairs': 4,
       'images': [
-        'assets/card1.jpg',
-        'assets/card2.jpg',
-        'assets/card3.jpg',
-        'assets/card4.jpg'
+        'assets/card1.png',
+        'assets/card2.png',
+        'assets/card3.png',
+        'assets/card4.png'
       ],
       'position': Offset(120, 1)
     },
@@ -54,11 +54,11 @@ class _LevelScreenState extends State<LevelScreen> {
       'level': 2,
       'numPairs': 6,
       'images': [
-        'assets/card1.jpg',
-        'assets/card2.jpg',
-        'assets/card3.jpg',
-        'assets/card4.jpg',
-        'assets/card5.jpg',
+        'assets/card1.png',
+        'assets/card2.png',
+        'assets/card3.png',
+        'assets/card4.png',
+        'assets/card5.png',
       ],
       'position': Offset(250, 70)
     },
@@ -66,12 +66,12 @@ class _LevelScreenState extends State<LevelScreen> {
       'level': 3,
       'numPairs': 6,
       'images': [
-        'assets/card1.jpg',
-        'assets/card2.jpg',
-        'assets/card3.jpg',
-        'assets/card4.jpg',
-        'assets/card5.jpg',
-        'assets/card6.jpg'
+        'assets/card1.png',
+        'assets/card2.png',
+        'assets/card3.png',
+        'assets/card4.png',
+        'assets/card5.png',
+        'assets/card6.png'
       ],
       'position': Offset(220, 170)
     },
@@ -79,12 +79,12 @@ class _LevelScreenState extends State<LevelScreen> {
       'level': 4,
       'numPairs': 6,
       'images': [
-        'assets/card1.jpg',
-        'assets/card2.jpg',
-        'assets/card3.jpg',
-        'assets/card4.jpg',
-        'assets/card5.jpg',
-        'assets/card6.jpg'
+        'assets/card1.png',
+        'assets/card2.png',
+        'assets/card3.png',
+        'assets/card4.png',
+        'assets/card5.png',
+        'assets/card6.png'
       ],
       'position': Offset(45, 290)
     },
@@ -92,12 +92,12 @@ class _LevelScreenState extends State<LevelScreen> {
       'level': 5,
       'numPairs': 6,
       'images': [
-        'assets/card1.jpg',
-        'assets/card2.jpg',
-        'assets/card3.jpg',
-        'assets/card4.jpg',
-        'assets/card5.jpg',
-        'assets/card6.jpg'
+        'assets/card1.png',
+        'assets/card2.png',
+        'assets/card3.png',
+        'assets/card4.png',
+        'assets/card5.png',
+        'assets/card6.png'
       ],
       'position': Offset(260, 340)
     },
@@ -105,22 +105,28 @@ class _LevelScreenState extends State<LevelScreen> {
       'level': 6,
       'numPairs': 6,
       'images': [
-        'assets/card1.jpg',
-        'assets/card2.jpg',
-        'assets/card3.jpg',
-        'assets/card4.jpg',
-        'assets/card5.jpg',
-        'assets/card6.jpg'
+        'assets/card1.png',
+        'assets/card2.png',
+        'assets/card3.png',
+        'assets/card4.png',
+        'assets/card5.png',
+        'assets/card6.png'
       ],
       'position': Offset(100, 440)
     },
   ];
+
   @override
   void initState() {
     super.initState();
     loadUserData();
-    loadLevelStatus();
-    DatabaseHelper.instance.initializeLevelStatus();
+    DatabaseHelper.instance.initializeLevelStatus().then((_) {
+      loadLevelStatus();
+    });
+
+    if (isSoundEnabled) {
+      SoundManager().playBackgroundMusic();
+    }
   }
 
   void showEditDialog() {
@@ -148,18 +154,15 @@ class _LevelScreenState extends State<LevelScreen> {
                   return GestureDetector(
                     onTap: () {
                       setState(() {
-
-                          selectedAvatar = avatar; // Update the temporary avatar selection
-
+                        selectedAvatar = avatar; // Update the selected avatar on tap
                       });
-
                     },
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: selectedAvatar == avatar
-                              ? Colors.blueAccent
-                              : Colors.transparent,
+                              ? Colors.blueAccent // Apply blue border if selected
+                              : Colors.transparent, // Otherwise no border
                           width: 3,
                         ),
                         borderRadius: BorderRadius.circular(10),
@@ -184,9 +187,6 @@ class _LevelScreenState extends State<LevelScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onChanged: (newNickname) {
-
-                },
               ),
             ],
           ),
@@ -219,6 +219,8 @@ class _LevelScreenState extends State<LevelScreen> {
       },
     );
   }
+
+
   // Load user data from SQLite
   Future<void> loadUserData() async {
     var userData = await DatabaseHelper.instance.queryAllRows();
@@ -263,10 +265,9 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   void dispose() {
-    audioPlayer.stop();
+    SoundManager().stopBackgroundMusic();
     super.dispose();
   }
-//showing the setting dialog
   void showSoundSettingsDialog() {
     showDialog(
       context: context,
@@ -282,13 +283,8 @@ class _LevelScreenState extends State<LevelScreen> {
                 onChanged: (value) {
                   setState(() {
                     isSoundEnabled = value;
+                    SoundManager().toggleSound(value);
                   });
-                  // Update the sound settings in the main LevelScreen state
-                  if (isSoundEnabled) {
-                    playBackgroundMusic();
-                  } else {
-                    audioPlayer.stop();
-                  }
                 },
               );
             },
@@ -346,7 +342,7 @@ class _LevelScreenState extends State<LevelScreen> {
                         child: Container(
                           padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                           decoration: BoxDecoration(
-                            color: Color(0xFFCDB89D),
+                            color: Color(0xFFB5C99A),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(color: Colors.white, width: 3),
                           ),
@@ -393,7 +389,7 @@ class _LevelScreenState extends State<LevelScreen> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Color(0xFFCDB89D).withOpacity(0.8),
+                          color: Color(0xFFB5C99A).withOpacity(0.8),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: Colors.white, width: 2),
                         ),
@@ -405,7 +401,7 @@ class _LevelScreenState extends State<LevelScreen> {
                       const SizedBox(height: 8), // Spacing between icons
                       Container(
                         decoration: BoxDecoration(
-                          color: Color(0xFFBAD6EB).withOpacity(0.8),
+                          color: Color(0xFFB5C99A).withOpacity(0.8),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: Colors.white, width: 2),
                         ),
@@ -472,42 +468,22 @@ class _LevelScreenState extends State<LevelScreen> {
                             children: List.generate(
                               levelStars[levelNumber] ?? 0,
                                   (index) => Container(
-                                margin: EdgeInsets.symmetric(horizontal: 1), // Space between stars
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    // Black outline star in the background
-                                    Icon(
-                                      Icons.star,
-                                      color: Colors.black,
-                                      size: 30, // Slightly larger for outline effect
-                                    ),
-                                    // Actual star icon in front
-                                    Icon(
-                                      Icons.star,
-                                      color: Color(0xFFFFA500), // Bright color for visibility
-                                      size: 24, // Smaller size to create the outline effect
-                                      shadows: [
-                                        Shadow(
-                                          offset: Offset(2, 2),  // Slight offset for 3D effect
-                                          blurRadius: 4,
-                                          color: Colors.black.withOpacity(0.5), // Soft shadow for depth
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                margin: EdgeInsets.symmetric(horizontal: 1.0), // Adjust the space between stars
+                                child: Icon(
+                                  Icons.star,
+                                  color: Color(0xFFFD8916), // Standard yellow color for stars
+                                  size: 28, // Standard star size
                                 ),
                               ),
                             ),
                           ),
-
-
                         ],
                       ),
                     );
                   }).toList(),
                 ),
-              ),
+              )
+
             ],
           ),
         ],
